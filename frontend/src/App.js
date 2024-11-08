@@ -1,121 +1,155 @@
-import React, { useState, useEffect } from "react";
-import './index.css';
-import Navbar from './components/Navbar';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Registration from './components/Registration';
-import Login from './components/Login';
+import React, { useState, useEffect, useCallback } from 'react';
 
-// Import the new user dashboard pages
-import AdminDashboard from './pages/AdminDashboard';
-import AuctioneerDashboard from './pages/AuctioneerDashboard';
-import ClientDashboard from './pages/ClientDashboard';
+const AdminDashboard = () => {
+  const [pendingItems, setPendingItems] = useState([]); // List of pending items
+  const [approvedItems, setApprovedItems] = useState([]); // List of approved items
 
-const App = () => {
-  const [userRole, setUserRole] = useState(null);
-  const [showLogin, setShowLogin] = useState(true); // State to toggle between login and register forms
+  const [startTime, setStartTime] = useState(""); // Auction start time
+  const [endTime, setEndTime] = useState(""); // Auction end time
+  const [currentTime, setCurrentTime] = useState(new Date()); // To show real-time clock
+  const [remainingTime, setRemainingTime] = useState(0); // Remaining time for auction countdown
 
+  // useCallback to memoize the calculateRemainingTime function
+  const calculateRemainingTime = useCallback(() => {
+    const end = new Date(endTime);
+    const now = new Date();
+    return Math.max(0, end - now); // Return remaining time in milliseconds
+  }, [endTime]);
+
+  // Update the current time every second
   useEffect(() => {
-    // Check if a user is logged in by checking for the JWT token in localStorage
-    const token = localStorage.getItem("access_token");
-
-    if (token) {
-      try {
-        // Validate if token has three parts (header, payload, signature)
-        const tokenParts = token.split(".");
-        if (tokenParts.length === 3) {
-          const decodedToken = JSON.parse(atob(tokenParts[1])); // Decode the payload part
-          setUserRole(decodedToken.role); // Assuming role is stored in the JWT token
-        } else {
-          console.error("Invalid token format");
-          localStorage.removeItem("access_token");
-        }
-      } catch (error) {
-        console.error("Failed to decode token:", error);
-        localStorage.removeItem("access_token");
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+      if (startTime && endTime) {
+        const remaining = calculateRemainingTime();
+        setRemainingTime(remaining);
       }
-    }
-  }, []);
+    }, 1000);
 
-  const toggleForm = () => {
-    setShowLogin(!showLogin); // Toggle between login and registration
+    return () => clearInterval(interval); // Cleanup on component unmount
+  }, [startTime, endTime, calculateRemainingTime]);
+
+  const formatTime = (milliseconds) => {
+    const seconds = Math.floor((milliseconds / 1000) % 60);
+    const minutes = Math.floor((milliseconds / 1000 / 60) % 60);
+    const hours = Math.floor((milliseconds / 1000 / 60 / 60) % 24);
+    return `${hours}:${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   };
 
-  // Function to handle logout and update userRole state to null
-  const handleLogout = () => {
-    // Remove the access token from localStorage
-    localStorage.removeItem("access_token");
+  // Approve an item
+  const approveItem = (item) => {
+    setApprovedItems([...approvedItems, item]);
+    setPendingItems(pendingItems.filter((i) => i.id !== item.id)); // Remove item from pending
+  };
 
-    // Set the userRole to null, which will trigger a re-render
-    setUserRole(null);
+  // Reject an item
+  const rejectItem = (item) => {
+    setPendingItems(pendingItems.filter((i) => i.id !== item.id)); // Remove item from pending
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-100">
-        {/* Pass userRole and handleLogout to Navbar */}
-        {userRole && <Navbar userRole={userRole} handleLogout={handleLogout} />}
-        
-        <main className="container mx-auto p-6">
-          <Routes>
-            {/* Redirect user to dashboard if logged in */}
-            <Route
-              path="/"
-              element={
-                userRole ? (
-                  <Navigate to={`/${userRole}-dashboard`} />
-                ) : (
-                  <div className="max-w-md mx-auto">
-                    {/* Conditional rendering of login or registration form */}
-                    {showLogin ? <Login setUserRole={setUserRole} /> : <Registration />}
-                    <div className="text-center mt-4">
-                      <button
-                        onClick={toggleForm}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        {showLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-                      </button>
-                    </div>
-                  </div>
-                )
-              }
-            />
-
-            {/* Explicit login route */}
-            <Route
-              path="/login"
-              element={
-                userRole ? (
-                  <Navigate to={`/${userRole}-dashboard`} />
-                ) : (
-                  <Login setUserRole={setUserRole} />
-                )
-              }
-            />
-
-            {/* Explicit registration route */}
-            <Route
-              path="/registration"
-              element={<Registration />}
-            />
-
-            {/* User Dashboard Routes */}
-            <Route
-              path="/admin-dashboard"
-              element={userRole === "admin" ? <AdminDashboard /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/auctioneer-dashboard"
-              element={userRole === "auctioneer" ? <AuctioneerDashboard /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/client-dashboard"
-              element={userRole === "client" ? <ClientDashboard /> : <Navigate to="/" />}
-            />
-          </Routes>
-        </main>
+    <div className="container mx-auto p-6">
+      <h1 className="text-3xl font-semibold">Admin Dashboard</h1>
+      
+      {/* System Overview Section */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-medium">System Overview</h2>
+        <div className="grid grid-cols-3 gap-6 mt-4">
+          <div className="bg-blue-100 p-4 rounded">
+            <h3 className="font-semibold">Total Users</h3>
+            <p>100</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded">
+            <h3 className="font-semibold">Active Auctions</h3>
+            <p>5</p>
+          </div>
+          <div className="bg-blue-100 p-4 rounded">
+            <h3 className="font-semibold">Total Bids</h3>
+            <p>350</p>
+          </div>
+        </div>
       </div>
-    </Router>
+
+      {/* Auction Time Setup */}
+      <div className="mt-6">
+        <h2 className="text-2xl font-medium">Auction Timing</h2>
+        <div className="mt-4">
+          <label className="block mb-2">Start Time:</label>
+          <input
+            type="datetime-local"
+            value={startTime}
+            onChange={(e) => setStartTime(e.target.value)}
+            className="p-2 border rounded w-full"
+          />
+          <label className="block mt-4 mb-2">End Time:</label>
+          <input
+            type="datetime-local"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            className="p-2 border rounded w-full"
+          />
+        </div>
+      </div>
+
+      {/* Auction Countdown */}
+      <div className="mt-6">
+        {startTime && endTime && (
+          <div className="bg-yellow-100 p-4 rounded">
+            <h3 className="font-semibold">Auction Countdown</h3>
+            <p>Remaining Time: {formatTime(remainingTime)}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Real Time Clock */}
+      <div className="mt-6">
+        <div className="bg-green-100 p-4 rounded">
+          <h3 className="font-semibold">Real Time Clock</h3>
+          <p>{currentTime.toLocaleTimeString()}</p>
+        </div>
+      </div>
+
+      {/* Auction Approval Section */}
+      <h2 className="text-2xl font-medium mt-6">Pending Auctions</h2>
+      <div className="mt-4">
+        {pendingItems.length === 0 ? (
+          <p>No pending auctions.</p>
+        ) : (
+          <ul>
+            {pendingItems.map((item) => (
+              <li key={item.id} className="border p-4 mb-4">
+                <h4 className="font-bold">{item.name}</h4>
+                <p>{item.description}</p>
+                <button onClick={() => approveItem(item)} className="bg-green-600 text-white p-2 rounded mr-2">
+                  Approve
+                </button>
+                <button onClick={() => rejectItem(item)} className="bg-red-600 text-white p-2 rounded">
+                  Reject
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Approved Auctions Section */}
+      <h2 className="text-2xl font-medium mt-6">Approved Auctions</h2>
+      <div className="mt-4">
+        {approvedItems.length === 0 ? (
+          <p>No approved auctions.</p>
+        ) : (
+          <ul>
+            {approvedItems.map((item) => (
+              <li key={item.id} className="border p-4 mb-4">
+                <h4 className="font-bold">{item.name}</h4>
+                <p>{item.description}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default App;
+export default AdminDashboard;
