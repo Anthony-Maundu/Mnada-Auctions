@@ -17,7 +17,8 @@ const AuctioneerDashboard = () => {
     'Art & Collectibles',
     'Jewelry & Watches',
     'Antiques',
-    'Machinery'
+    'Machinery',
+    'Others'
   ];
 
   // Handle form submission
