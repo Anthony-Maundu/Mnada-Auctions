@@ -1,4 +1,109 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
+import './index.css';
+import Navbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Registration from './components/Registration';
+import Login from './components/Login';
+
+// Import the new user dashboard pages
+import AuctioneerDashboard from './pages/AuctioneerDashboard';
+import ClientDashboard from './pages/ClientDashboard';
+
+const App = () => {
+  const [userRole, setUserRole] = useState(null);
+  const [showLogin, setShowLogin] = useState(true); // Toggle between login and register forms
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    if (token) {
+      try {
+        const tokenParts = token.split(".");
+        if (tokenParts.length === 3) {
+          const decodedToken = JSON.parse(atob(tokenParts[1])); // Decode JWT payload
+          setUserRole(decodedToken.role); // Assuming role is stored in the JWT token
+        } else {
+          console.error("Invalid token format");
+          localStorage.removeItem("access_token");
+        }
+      } catch (error) {
+        console.error("Failed to decode token:", error);
+        localStorage.removeItem("access_token");
+      }
+    }
+  }, []);
+
+  const toggleForm = () => setShowLogin(!showLogin);
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    setUserRole(null);
+  };
+
+  return (
+    <Router>
+      <div className="min-h-screen bg-gray-100">
+        {userRole && <Navbar userRole={userRole} handleLogout={handleLogout} />}
+        
+        <main className="container mx-auto p-6">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                userRole ? (
+                  <Navigate to={`/${userRole}-dashboard`} />
+                ) : (
+                  <div className="max-w-md mx-auto">
+                    {showLogin ? <Login setUserRole={setUserRole} /> : <Registration />}
+                    <div className="text-center mt-4">
+                      <button
+                        onClick={toggleForm}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        {showLogin ? "Don't have an account? Register" : "Already have an account? Login"}
+                      </button>
+                    </div>
+                  </div>
+                )
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                userRole ? (
+                  <Navigate to={`/${userRole}-dashboard`} />
+                ) : (
+                  <Login setUserRole={setUserRole} />
+                )
+              }
+            />
+
+            <Route
+              path="/registration"
+              element={<Registration />}
+            />
+
+            <Route
+              path="/admin-dashboard"
+              element={userRole === "admin" ? <AdminDashboard /> : <Navigate to="/" />}
+            />
+
+            <Route
+              path="/auctioneer-dashboard"
+              element={userRole === "auctioneer" ? <AuctioneerDashboard /> : <Navigate to="/" />}
+            />
+
+            <Route
+              path="/client-dashboard"
+              element={userRole === "client" ? <ClientDashboard /> : <Navigate to="/" />}
+            />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+};
 
 const AdminDashboard = () => {
   const [pendingItems, setPendingItems] = useState([]); // List of pending items
@@ -6,17 +111,17 @@ const AdminDashboard = () => {
 
   const [startTime, setStartTime] = useState(""); // Auction start time
   const [endTime, setEndTime] = useState(""); // Auction end time
-  const [currentTime, setCurrentTime] = useState(new Date()); // To show real-time clock
-  const [remainingTime, setRemainingTime] = useState(0); // Remaining time for auction countdown
+  const [currentTime, setCurrentTime] = useState(new Date()); // Real-time clock
+  const [remainingTime, setRemainingTime] = useState(0); // Countdown for auction
 
-  // useCallback to memoize the calculateRemainingTime function
+  // Memoize calculateRemainingTime
   const calculateRemainingTime = useCallback(() => {
     const end = new Date(endTime);
     const now = new Date();
-    return Math.max(0, end - now); // Return remaining time in milliseconds
+    return Math.max(0, end - now); // Remaining time in ms
   }, [endTime]);
 
-  // Update the current time every second
+  // Update current time every second
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date());
@@ -26,7 +131,7 @@ const AdminDashboard = () => {
       }
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup on component unmount
+    return () => clearInterval(interval); // Cleanup on unmount
   }, [startTime, endTime, calculateRemainingTime]);
 
   const formatTime = (milliseconds) => {
@@ -51,7 +156,7 @@ const AdminDashboard = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-semibold">Admin Dashboard</h1>
       
-      {/* System Overview Section */}
+      {/* System Overview */}
       <div className="mt-6">
         <h2 className="text-2xl font-medium">System Overview</h2>
         <div className="grid grid-cols-3 gap-6 mt-4">
@@ -132,7 +237,7 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Approved Auctions Section */}
+      {/* Approved Auctions */}
       <h2 className="text-2xl font-medium mt-6">Approved Auctions</h2>
       <div className="mt-4">
         {approvedItems.length === 0 ? (
@@ -152,4 +257,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default App;
