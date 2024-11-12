@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import './index.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Registration from './components/Registration';
-import Login from './components/Login';
+import Authentication from './components/Authentication'; // Updated import
 
 // Import the user dashboard and admin dashboard components
 import HomePage from './components/HomePage';
@@ -61,14 +60,14 @@ const App = () => {
                 userRole ? (
                   <Navigate to={`/${userRole}-dashboard`} />
                 ) : (
-                  <Login setUserRole={setUserRole} />
+                  <Authentication setUserRole={setUserRole} /> // Use Authentication component here
                 )
               }
             />
 
             <Route
               path="/registration"
-              element={<Registration />}
+              element={<Authentication setUserRole={setUserRole} />} // Use Authentication component here as well
             />
 
             <Route
