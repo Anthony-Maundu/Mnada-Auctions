@@ -8,12 +8,21 @@ const Registration = () => {
   const [role, setRole] = useState("client"); // Default role is "client"
   const [loading, setLoading] = useState(false); // Track loading state
   const [error, setError] = useState(""); // Track error message
+  const [successMessage, setSuccessMessage] = useState(""); // Track success message
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(""); // Reset error before submitting
+    setSuccessMessage(""); // Reset success message before submitting
+
+    // Basic form validation
+    if (!username || !email || !password) {
+      setError("All fields are required.");
+      setLoading(false);
+      return;
+    }
 
     // Mock registration process
     const mockDatabase = [
@@ -49,9 +58,12 @@ const Registration = () => {
       // Simulate a successful registration by storing the mock user
       localStorage.setItem("newUser", JSON.stringify({ username, email, role }));
 
-      // Alert and redirect to login page after successful registration
-      alert("Registration Successful!");
-      navigate("/login");
+      // Set success message and redirect after a short delay
+      setSuccessMessage("Registration Successful! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000); // Redirect after 2 seconds
+
     } catch (error) {
       setError("Registration Failed! Please try again."); // Display error message
     } finally {
@@ -66,6 +78,9 @@ const Registration = () => {
 
         {/* Show error message if there's any */}
         {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
+        {/* Show success message if registration is successful */}
+        {successMessage && <div className="text-green-500 text-sm mb-4">{successMessage}</div>}
 
         <input
           type="text"
