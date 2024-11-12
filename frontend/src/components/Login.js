@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import GoogleLogin from './GoogleLogin'; // Import GoogleLogin component
 
 const Login = ({ setUserRole }) => {
   const [selectedRole, setSelectedRole] = useState(''); // Store selected role
@@ -32,7 +33,7 @@ const Login = ({ setUserRole }) => {
       <h2 className="text-center text-2xl font-semibold mb-4">Login</h2>
       
       <form onSubmit={handleLogin} className="space-y-4">
-        {/* Role selection dropdown first */}
+        {/* Role selection dropdown */}
         <div className="mb-4">
           <label className="block text-gray-700">Login as</label>
           <select
@@ -75,6 +76,14 @@ const Login = ({ setUserRole }) => {
           Login
         </button>
       </form>
+
+      {/* Divider for Google Login */}
+      <div className="my-4 text-center">or continue with:</div>
+
+      {/* Google Login button */}
+      <div className="mt-4">
+        <GoogleLogin setUserRole={setUserRole} />
+      </div>
     </div>
   );
 };

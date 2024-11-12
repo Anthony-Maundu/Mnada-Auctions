@@ -6,6 +6,7 @@ import Registration from './components/Registration';
 import Login from './components/Login';
 
 // Import the user dashboard and admin dashboard components
+import HomePage from './components/HomePage';
 import AuctioneerDashboard from './pages/AuctioneerDashboard';
 import ClientDashboard from './pages/ClientDashboard';
 import AdminDashboard from './pages/AdminDashboard'; // Import the existing AdminDashboard
@@ -48,25 +49,10 @@ const App = () => {
         
         <main className="container mx-auto p-6">
           <Routes>
+            {/* Set HomePage as the default route */}
             <Route
               path="/"
-              element={
-                userRole ? (
-                  <Navigate to={`/${userRole}-dashboard`} />
-                ) : (
-                  <div className="max-w-md mx-auto">
-                    {showLogin ? <Login setUserRole={setUserRole} /> : <Registration />}
-                    <div className="text-center mt-4">
-                      <button
-                        onClick={toggleForm}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        {showLogin ? "Don't have an account? Register" : "Already have an account? Login"}
-                      </button>
-                    </div>
-                  </div>
-                )
-              }
+              element={<HomePage userRole={userRole} handleLogout={handleLogout} />}
             />
 
             <Route
