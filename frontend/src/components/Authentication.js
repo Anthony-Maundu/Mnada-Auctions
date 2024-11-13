@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GoogleLogin from './GoogleLogin'; // Import GoogleLogin component
+import Navbar from './Navbar'; // Import Navbar component correctly (default import)
 import auctionBackground from '../images/auction1.jpg'; // Background image
 
-const Authentication = ({ setUserRole }) => {
+const Authentication = ({ setUserRole, userRole }) => {
   const [isLoginMode, setIsLoginMode] = useState(true); // Toggle between login and registration modes
   const [selectedRole, setSelectedRole] = useState('');
   const [username, setUsername] = useState('');
@@ -90,9 +91,20 @@ const Authentication = ({ setUserRole }) => {
         width: '100vw'
       }}
     >
+      {/* Include Navbar if user is logged in */}
+      {userRole && <Navbar userRole={userRole} handleLogout={() => setUserRole(null)} />}
+
       <div className="flex items-center justify-center h-full">
         {/* Container with hover effect */}
         <div className="max-w-md p-6 bg-white rounded shadow-lg relative z-10 group hover:bg-opacity-75">
+          {/* Return Home button */}
+          <button
+            onClick={() => navigate('/')} // Navigate to the homepage
+            className="absolute top-4 left-4 bg-gray-500 text-white p-2 rounded"
+          >
+            Return Home
+          </button>
+
           {isLoginMode ? (
             <>
               <h2 className="text-center text-2xl font-semibold mb-4">Login</h2>
