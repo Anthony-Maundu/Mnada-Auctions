@@ -1,3 +1,4 @@
+// Navbar.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,23 +19,13 @@ const Navbar = ({ userRole, handleLogout }) => {
         <h1 className="text-white text-2xl font-semibold">Mnada Auctioneering</h1>
 
         <div className="flex items-center space-x-4">
-          {/* Show Sign In button if not logged in */}
+          {/* Show Login/Register button if not logged in */}
           {!userRole && (
             <button
               onClick={() => navigate('/login')} // Navigate to login page
               className="bg-blue-500 text-white p-2 rounded"
             >
-              Sign In
-            </button>
-          )}
-
-          {/* Show Sign Up button if not logged in */}
-          {!userRole && (
-            <button
-              onClick={() => navigate('/Registration')} // Navigate to signup page
-              className="bg-green-500 text-white p-2 rounded"
-            >
-              Sign Up
+              Login/Register
             </button>
           )}
 
@@ -53,4 +44,5 @@ const Navbar = ({ userRole, handleLogout }) => {
   );
 };
 
+// Default export
 export default Navbar;
