@@ -13,7 +13,7 @@ const Navbar = ({ userRole, handleLogout }) => {
   };
 
   return (
-    <nav className="bg-blue-600 p-4">
+    <nav className="bg-gray-400 p-4">
       <div className="container mx-auto flex justify-between items-center">
         <h1 className="text-white text-2xl font-semibold">Mnada Auctioneering</h1>
 
@@ -22,7 +22,7 @@ const Navbar = ({ userRole, handleLogout }) => {
           {!userRole && (
             <button
               onClick={() => navigate('/login')} // Navigate to login page
-              className="bg-blue-500 text-white p-2 rounded"
+              className=" text-white p-2 rounded bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300"
             >
               Sign In
             </button>
@@ -32,7 +32,8 @@ const Navbar = ({ userRole, handleLogout }) => {
           {!userRole && (
             <button
               onClick={() => navigate('/Registration')} // Navigate to signup page
-              className="bg-green-500 text-white p-2 rounded"
+              className="bg-green-500 text-white p-2 rounded  hover:bg-green-400 active:bg-gray-600 focus:outline-none focus:ring focus:ring-violet-300"
+            
             >
               Sign Up
             </button>
@@ -42,7 +43,7 @@ const Navbar = ({ userRole, handleLogout }) => {
           {userRole && (
             <button
               onClick={handleLogoutClick}
-              className="bg-red-500 text-white p-2 rounded"
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-400 active:bg-gray-600 focus:outline-none focus:ring focus:ring-violet-300" 
             >
               Logout
             </button>

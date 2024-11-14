@@ -60,7 +60,7 @@ const AuctioneerDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="container mx-auto p-6 bg-purple-100">
       <h1 className="text-3xl font-semibold">Auctioneer Dashboard</h1>
 
       {/* Add Item Form */}
@@ -74,7 +74,7 @@ const AuctioneerDashboard = () => {
               id="itemName"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className="hover:shadow-lg w-full p-2 border border-gray-300 rounded mt-2"
               required
             />
           </div>
@@ -85,7 +85,7 @@ const AuctioneerDashboard = () => {
               id="itemDescription"
               value={itemDescription}
               onChange={(e) => setItemDescription(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className="hover:shadow-lg w-full p-2 border border-gray-300 rounded mt-2"
               required
             />
           </div>
@@ -96,7 +96,7 @@ const AuctioneerDashboard = () => {
               type="file"
               id="itemImages"
               onChange={handleImageChange}
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className=" w-full p-2 border border-gray-300 rounded mt-2"
               accept="image/*"
               multiple
               required
@@ -105,13 +105,13 @@ const AuctioneerDashboard = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="startingBid" className="block text-lg font-medium">Starting Bid</label>
+            <label htmlFor="startingBid" className=" hover:shadow-md  block text-lg font-medium">Starting Bid</label>
             <input
               type="number"
               id="startingBid"
               value={startingBid}
               onChange={(e) => setStartingBid(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className="w-full p-2 border border-gray-300 rounded mt-2 hover:bg-gray-200"
               required
             />
           </div>
@@ -122,7 +122,7 @@ const AuctioneerDashboard = () => {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mt-2"
+              className="w-full p-2 border border-gray-300 rounded mt-2 hover:bg-gray-200"
               required
             >
               <option value="">Select Category</option>
@@ -134,7 +134,7 @@ const AuctioneerDashboard = () => {
             </select>
           </div>
 
-          <button type="submit" className="bg-blue-600 text-white p-2 rounded">Add Item</button>
+          <button type="submit" className="bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700">Add Item</button>
         </form>
       </div>
 
