@@ -16,12 +16,6 @@ const Authentication = ({ setUserRole, userRole }) => {
   const [successMessage, setSuccessMessage] = useState(''); // Success message for registration
   const navigate = useNavigate();
 
-  const mockDatabase = [
-    { username: "admin", email: "admin@example.com", password: "admin123", role: "admin" },
-    { username: "auctioneer", email: "auctioneer@example.com", password: "auction123", role: "auctioneer" },
-    { username: "client", email: "client@example.com", password: "client123", role: "client" },
-  ];
-
   const handleRoleChange = (event) => {
     setSelectedRole(event.target.value);
   };
@@ -29,22 +23,10 @@ const Authentication = ({ setUserRole, userRole }) => {
   const handleLogin = (event) => {
     event.preventDefault();
 
-    // Verify if entered credentials match any in the mock database
-    const authenticatedUser = mockDatabase.find(
-      (user) =>
-        user.username === username &&
-        user.password === password &&
-        user.role === selectedRole
-    );
-
-    if (authenticatedUser) {
-      const token = btoa(JSON.stringify({ username, role: selectedRole }));
-      localStorage.setItem("access_token", token);
-      setUserRole(selectedRole);
-      navigate(`/${selectedRole}-dashboard`);
-    } else {
-      setError("Invalid username, password, or role selection. Please try again.");
-    }
+    const token = btoa(JSON.stringify({ username, role: selectedRole }));
+    localStorage.setItem("access_token", token);
+    setUserRole(selectedRole);
+    navigate(`/${selectedRole}-dashboard`);
   };
 
   const handleRegister = async (e) => {
@@ -59,31 +41,42 @@ const Authentication = ({ setUserRole, userRole }) => {
       return;
     }
 
-    const existingUser = mockDatabase.find(
-      (user) => user.username === username || user.email === email
-    );
+    const mockDatabase = [
+      { username: "admin", email: "admin@example.com", password: "admin123", role: "admin" },
+      { username: "auctioneer", email: "auctioneer@example.com", password: "auction123", role: "auctioneer" },
+      { username: "client", email: "client@example.com", password: "client123", role: "client" },
+    ];
 
-    if (existingUser) {
-      setError("Username or email already exists.");
+    try {
+      const existingUser = mockDatabase.find(
+        (user) => user.username === username || user.email === email
+      );
+
+      if (existingUser) {
+        setError("Username or email already exists.");
+        setLoading(false);
+        return;
+      }
+
+      const existingAdmin = mockDatabase.find((user) => user.role === "admin");
+
+      if (role === "admin" && existingAdmin) {
+        setError("An admin already exists. Only one admin is allowed.");
+        setLoading(false);
+        return;
+      }
+
+      mockDatabase.push({ username, email, password, role });
+      localStorage.setItem("newUser", JSON.stringify({ username, email, role }));
+      setSuccessMessage("Registration Successful! Redirecting to login...");
+      setTimeout(() => {
+        setIsLoginMode(true);
+      }, 2000);
+    } catch (error) {
+      setError("Registration Failed! Please try again.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const existingAdmin = mockDatabase.find((user) => user.role === "admin");
-
-    if (role === "admin" && existingAdmin) {
-      setError("An admin already exists. Only one admin is allowed.");
-      setLoading(false);
-      return;
-    }
-
-    mockDatabase.push({ username, email, password, role });
-    localStorage.setItem("newUser", JSON.stringify({ username, email, role }));
-    setSuccessMessage("Registration Successful! Redirecting to login...");
-    setTimeout(() => {
-      setIsLoginMode(true);
-    }, 2000);
-    setLoading(false);
   };
 
   return (
@@ -98,12 +91,15 @@ const Authentication = ({ setUserRole, userRole }) => {
         width: '100vw'
       }}
     >
+      {/* Include Navbar if user is logged in */}
       {userRole && <Navbar userRole={userRole} handleLogout={() => setUserRole(null)} />}
 
       <div className="flex items-center justify-center h-full">
+        {/* Container with hover effect */}
         <div className="max-w-md p-6 bg-white rounded shadow-lg relative z-10 group hover:bg-opacity-75">
+          {/* Return Home button */}
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/')} // Navigate to the homepage
             className="absolute top-4 left-4 bg-gray-500 text-white p-2 rounded"
           >
             Return Home
@@ -112,7 +108,6 @@ const Authentication = ({ setUserRole, userRole }) => {
           {isLoginMode ? (
             <>
               <h2 className="text-center text-2xl font-semibold mb-4">Login</h2>
-              {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="mb-4">
                   <label className="block text-gray-700">Login as</label>

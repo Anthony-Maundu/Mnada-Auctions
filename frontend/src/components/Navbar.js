@@ -1,24 +1,48 @@
+// Navbar.js
 import React from 'react';
-import Navbar from './Navbar';
-import AuctionList from './AuctionList';
+import { useNavigate } from 'react-router-dom';
 
-const HomePage = ({ userRole, handleLogout }) => {
+const Navbar = ({ userRole, handleLogout }) => {
+  const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    // Call the handleLogout function passed from App.js
+    handleLogout();
+
+    // Redirect to the login page
+    navigate("/login");
+  };
+
   return (
-    <div className='bg-purple-200 min-h-screen'>
-      {/* Navbar */}
-      <Navbar userRole={userRole} handleLogout={handleLogout} />
+    <nav className="bg-blue-600 p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <h1 className="text-white text-2xl font-semibold">Mnada Auctioneering</h1>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-8 ">
-        <h2 className="text-3xl font-semibold mb-6 hover:shadow-lg">Available Auctions</h2>
+        <div className="flex items-center space-x-4">
+          {/* Show Login/Register button if not logged in */}
+          {!userRole && (
+            <button
+              onClick={() => navigate('/login')} // Navigate to login page
+              className="bg-blue-500 text-white p-2 rounded"
+            >
+              Login/Register
+            </button>
+          )}
 
-        {/* Auction list in grid layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 rounded-md hover:shadow-lg">
-          <AuctionList />
+          {/* Show the logout button if the user is logged in */}
+          {userRole && (
+            <button
+              onClick={handleLogoutClick}
+              className="bg-red-500 text-white p-2 rounded"
+            >
+              Logout
+            </button>
+          )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default HomePage;
+// Default export
+export default Navbar;
