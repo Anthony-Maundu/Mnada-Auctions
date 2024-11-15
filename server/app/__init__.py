@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS  # Import CORS
 
 db = SQLAlchemy()
 
@@ -12,6 +13,9 @@ def create_app():
 
     db.init_app(app)
     JWTManager(app)
+
+    CORS(app, supports_credentials=True, origins=["http://localhost:3000"], methods=["GET", "POST", "PUT", "DELETE"], allow_headers=["Content-Type", "Authorization"])
+
 
     # Import and register blueprints from routes.py
     from .routes import auth_blueprint, user_blueprint, item_blueprint, auction_blueprint, bid_blueprint, notification_blueprint

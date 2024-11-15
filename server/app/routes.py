@@ -99,11 +99,15 @@ class ItemAPI(MethodView):
 
 item_blueprint.add_url_rule('/item', view_func=ItemAPI.as_view('item'))
 
-### Auction Routes ###
 class AuctionAPI(MethodView):
-    decorators = [login_required(role='auctioneer')]
+    # Apply login_required decorator only to the post method
+    decorators = {}
 
     def post(self):
+        # Restrict this method to logged-in auctioneers
+        if not login_required(role='auctioneer'):
+            return jsonify({'message': 'Unauthorized access'}), 403
+
         data = request.get_json()
         new_auction = Auction(
             item_id=data['item_id'],
@@ -116,20 +120,22 @@ class AuctionAPI(MethodView):
         return jsonify({'message': 'Auction created successfully'}), 201
 
     def get(self):
+        # Allow this method to be publicly accessible
         auctions = Auction.query.all()
+        if not auctions:
+            return jsonify([]), 200  # Return empty list if no auctions exist
+
         return jsonify([
             {
                 'auction_id': auction.auction_id,
                 'title': auction.item.title,  # Assuming a relationship between Auction and Item
                 'shortDescription': auction.item.description[:100],  # Truncate for brevity
                 'images': auction.item.image_url.split(','),  # Assuming comma-separated image URLs
-                'currentBid': auction.item.starting_price,  # Replace with logic for current bid
+                'currentBid': max([bid.amount for bid in auction.bids], default=auction.item.starting_price),
                 'endDate': auction.end_time.strftime('%Y-%m-%d %H:%M:%S'),
                 'status': auction.status
             } for auction in auctions
-        ])
-
-auction_blueprint.add_url_rule('/auction', view_func=AuctionAPI.as_view('auction'))
+        ]), 200
 
 ### Bid Routes ###
 class BidAPI(MethodView):

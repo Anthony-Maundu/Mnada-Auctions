@@ -1,13 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
-import auctionData from '../data/AuctionData';
 
 const HomePage = ({ userRole, handleLogout }) => {
+  const [auctions, setAuctions] = useState([]); // State for fetched auction data
+  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [error, setError] = useState(''); // State for error messages
   const [selectedAuction, setSelectedAuction] = useState(null);
+
+  useEffect(() => {
+    // Fetch auctions from the server
+    const fetchAuctions = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/auctions'); // No Authorization header required
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch auctions. Please try again later.');
+        }
+
+        const data = await response.json();
+        setAuctions(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAuctions();
+  }, []);
 
   const handleSelectAuction = (item) => {
     setSelectedAuction(item);
   };
+
+  if (loading) {
+    return <div className="text-center mt-10">Loading auctions...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-10 text-red-500">{error}</div>;
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -21,16 +53,19 @@ const HomePage = ({ userRole, handleLogout }) => {
 
         {!selectedAuction ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {auctionData.slice(0, 6).map((item) => (
+            {auctions.slice(0, 6).map((item) => (
               <AuctionCard
-                key={item.id}
+                key={item.auction_id}
                 item={item}
                 onSelect={() => handleSelectAuction(item)}
               />
             ))}
           </div>
         ) : (
-          <AuctionDetail auction={selectedAuction} onBack={() => setSelectedAuction(null)} />
+          <AuctionDetail
+            auction={selectedAuction}
+            onBack={() => setSelectedAuction(null)}
+          />
         )}
       </div>
     </div>
@@ -43,7 +78,7 @@ const AuctionCard = ({ item, onSelect }) => (
     onClick={onSelect}
   >
     <img
-      src={item.images[0]}
+      src={item.images[0]} // Display the first image
       alt={item.title}
       className="w-full h-56 object-cover"
     />
@@ -78,7 +113,6 @@ const AuctionDetail = ({ auction, onBack }) => {
         &lt; Back to Auctions
       </button>
       <div className="relative mb-6">
-        {/* Carousel for selected auction */}
         <div className="flex overflow-hidden relative">
           <div
             className="flex transition-transform duration-500 ease-in-out"
@@ -94,8 +128,8 @@ const AuctionDetail = ({ auction, onBack }) => {
             ))}
           </div>
         </div>
-        
-        {/* Carousel navigation buttons */}
+
+        {/* Carousel Navigation Buttons */}
         <button
           onClick={handlePrevImage}
           className="absolute top-1/2 left-3 transform -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full hover:bg-gray-700 transition"
@@ -108,20 +142,8 @@ const AuctionDetail = ({ auction, onBack }) => {
         >
           &gt;
         </button>
-
-        {/* Image indicators */}
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {auction.images.map((_, index) => (
-            <div
-              key={index}
-              className={`w-3 h-3 rounded-full ${
-                currentImageIndex === index ? 'bg-blue-600' : 'bg-gray-300'
-              }`}
-            ></div>
-          ))}
-        </div>
       </div>
-      
+
       <div className="text-gray-900">
         <h3 className="text-2xl font-bold mb-2">{auction.title}</h3>
         <p className="text-gray-700 mb-6">{auction.shortDescription}</p>

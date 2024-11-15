@@ -30,14 +30,15 @@ class Item(db.Model):
 
     # Relationships
     auctions = db.relationship('Auction', backref='item', lazy=True)
-    images = db.relationship('Image', backref='item', lazy=True)
+    images = db.relationship('Image', backref='item', lazy=True, foreign_keys='Image.item_id')  # Specify foreign key explicitly
 
 
 class Image(db.Model):
     __tablename__ = 'images'
     image_id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(200), nullable=False, unique=True)  # Ensure unique URLs
-    item_id = db.Column(db.Integer, db.ForeignKey('items.item_id'), nullable=False)
+    item_id = db.Column(db.Integer, db.ForeignKey('items.item_id'), nullable=False)  # Foreign key to items table
+
 
 
 class Auction(db.Model):
