@@ -1,7 +1,7 @@
 import React from 'react';
 
 const ClientDashboard = () => {
-  return (
+  return (  
     <div className="container mx-auto p-6 bg-purple-100">
       <h1 className="text-3xl font-semibold hover:shadow-lg">Client Dashboard</h1>
       <div className="mt-6">

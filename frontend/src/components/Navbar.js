@@ -1,24 +1,46 @@
 import React from 'react';
-import Navbar from './Navbar';
-import AuctionList from './AuctionList';
+import { useNavigate } from 'react-router-dom';
+import { FaSignInAlt } from 'react-icons/fa'; // Removed FaUserPlus since it's not used
+import { FiLogOut } from 'react-icons/fi';
 
-const HomePage = ({ userRole, handleLogout }) => {
+const Navbar = ({ userRole, handleLogout }) => {
+  const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    handleLogout();
+    navigate('/login');
+  };
+
   return (
-    <div className='bg-purple-200 min-h-screen'>
-      {/* Navbar */}
-      <Navbar userRole={userRole} handleLogout={handleLogout} />
+    <nav className="bg-gray-800 p-4 shadow-lg">
+      <div className="container mx-auto flex justify-between items-center">
+        <h1 className="text-white text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>
+          Mnada Auctioneers       </h1>
 
-      {/* Main content */}
-      <div className="container mx-auto px-4 py-8 ">
-        <h2 className="text-3xl font-semibold mb-6 hover:shadow-lg">Available Auctions</h2>
+        <div className="flex items-center space-x-6">
+          {!userRole && (
+            <button
+              onClick={() => navigate('/login')} // Navigate to the login page
+              className="flex items-center text-white bg-blue-600 px-3 py-2 rounded-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            >
+              <FaSignInAlt className="mr-2" />
+              Log In / Register {/* Display 'Log In / Register' */}
+            </button>
+          )}
 
-        {/* Auction list in grid layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 rounded-md hover:shadow-lg">
-          <AuctionList />
+          {userRole && (
+            <button
+              onClick={handleLogoutClick}
+              className="flex items-center text-white bg-red-600 px-3 py-2 rounded-md hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300"
+            >
+              <FiLogOut className="mr-2" />
+              Logout
+            </button>
+          )}
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 
-export default HomePage;
+export default Navbar;

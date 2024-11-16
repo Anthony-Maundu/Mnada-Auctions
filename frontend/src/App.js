@@ -2,94 +2,84 @@ import React, { useState, useEffect } from "react";
 import './index.css';
 import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Authentication from './components/Authentication';
+import Authentication from './components/Authentication'; // Updated import
+
+// Import the user dashboard and admin dashboard components
 import HomePage from './components/HomePage';
 import AuctioneerDashboard from './pages/AuctioneerDashboard';
 import ClientDashboard from './pages/ClientDashboard';
-import AdminDashboard from './pages/AdminDashboard';
-
-// Constants for routes and user roles
-const ROUTES = {
-  HOME: "/",
-  LOGIN: "/login",
-  REGISTRATION: "/registration",
-  ADMIN_DASHBOARD: "/admin-dashboard",
-  AUCTIONEER_DASHBOARD: "/auctioneer-dashboard",
-  CLIENT_DASHBOARD: "/client-dashboard",
-};
-
-const ROLES = {
-  ADMIN: "admin",
-  AUCTIONEER: "auctioneer",
-  CLIENT: "client",
-};
+import AdminDashboard from './pages/AdminDashboard'; // Import the existing AdminDashboard
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
-
+  
   useEffect(() => {
-    // Try to fetch the user role from localStorage (decoding JWT)
     const token = localStorage.getItem("access_token");
 
     if (token) {
       try {
         const tokenParts = token.split(".");
         if (tokenParts.length === 3) {
-          const decodedToken = JSON.parse(atob(tokenParts[1])); // Decode the JWT payload
-          setUserRole(decodedToken.role); // Set user role from token
+          const decodedToken = JSON.parse(atob(tokenParts[1])); // Decode JWT payload
+          setUserRole(decodedToken.role); // Assuming role is stored in the JWT token
         } else {
           console.error("Invalid token format");
-          localStorage.removeItem("access_token"); // Remove invalid token
+          localStorage.removeItem("access_token");
         }
       } catch (error) {
         console.error("Failed to decode token:", error);
-        localStorage.removeItem("access_token"); // Remove invalid token on error
+        localStorage.removeItem("access_token");
       }
     }
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token"); // Remove token on logout
-    setUserRole(null); // Reset user role
+    localStorage.removeItem("access_token");
+    setUserRole(null);
   };
 
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
-        {userRole && <Navbar userRole={userRole} handleLogout={handleLogout} />} {/* Display Navbar if user is logged in */}
+        {userRole && <Navbar userRole={userRole} handleLogout={handleLogout} />}
         
-        <main className="container mx-auto !ml-0">
+        <main className="container mx-auto p-6">
           <Routes>
-            {/* Default route */}
-            <Route path={ROUTES.HOME} element={<HomePage userRole={userRole} handleLogout={handleLogout} />} />
-
-            {/* Conditional login route - redirect to dashboard if already logged in */}
+            {/* Set HomePage as the default route */}
             <Route
-              path={ROUTES.LOGIN}
+              path="/"
+              element={<HomePage userRole={userRole} handleLogout={handleLogout} />}
+            />
+
+            <Route
+              path="/login"
               element={
                 userRole ? (
-                  <Navigate to={`/${userRole}-dashboard`} /> // Redirect based on role
+                  <Navigate to={`/${userRole}-dashboard`} />
                 ) : (
-                  <Authentication setUserRole={setUserRole} /> // Show Authentication form
+                  <Authentication setUserRole={setUserRole} /> // Use Authentication component here
                 )
               }
             />
 
-            {/* Registration route */}
-            <Route path={ROUTES.REGISTRATION} element={<Authentication setUserRole={setUserRole} />} />
+            <Route
+              path="/registration"
+              element={<Authentication setUserRole={setUserRole} />} // Use Authentication component here as well
+            />
 
-            {/* Role-based dashboard routes */}
             <Route
-              path={ROUTES.ADMIN_DASHBOARD}
-              element={userRole === ROLES.ADMIN ? <AdminDashboard /> : <Navigate to={ROUTES.HOME} />}
+              path="/admin-dashboard"
+              element={userRole === "admin" ? <AdminDashboard /> : <Navigate to="/" />}
             />
+
             <Route
-              path={ROUTES.AUCTIONEER_DASHBOARD}
-              element={userRole === ROLES.AUCTIONEER ? <AuctioneerDashboard /> : <Navigate to={ROUTES.HOME} />}
+              path="/auctioneer-dashboard"
+              element={userRole === "auctioneer" ? <AuctioneerDashboard /> : <Navigate to="/" />}
             />
+
             <Route
-              path={ROUTES.CLIENT_DASHBOARD}
-              element={userRole === ROLES.CLIENT ? <ClientDashboard /> : <Navigate to={ROUTES.HOME} />}
+              path="/client-dashboard"
+              element={userRole === "client" ? <ClientDashboard /> : <Navigate to="/" />}
             />
           </Routes>
         </main>
