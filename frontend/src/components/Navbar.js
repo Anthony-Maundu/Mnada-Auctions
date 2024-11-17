@@ -1,40 +1,39 @@
-// Navbar.js
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaSignInAlt } from 'react-icons/fa'; // Removed FaUserPlus since it's not used
+import { FiLogOut } from 'react-icons/fi';
 
 const Navbar = ({ userRole, handleLogout }) => {
   const navigate = useNavigate();
 
   const handleLogoutClick = () => {
-    // Call the handleLogout function passed from App.js
     handleLogout();
-
-    // Redirect to the login page
-    navigate("/login");
+    navigate('/login');
   };
 
   return (
-    <nav className="bg-blue-600 p-4">
+    <nav className="bg-gray-800 p-4 shadow-lg">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-white text-2xl font-semibold">Mnada Auctioneering</h1>
+        <h1 className="text-white text-2xl font-bold cursor-pointer" onClick={() => navigate('/')}>
+          Mnada Auctioneers       </h1>
 
-        <div className="flex items-center space-x-4">
-          {/* Show Login/Register button if not logged in */}
+        <div className="flex items-center space-x-6">
           {!userRole && (
             <button
-              onClick={() => navigate('/login')} // Navigate to login page
-              className="bg-blue-500 text-white p-2 rounded"
+              onClick={() => navigate('/login')} // Navigate to the login page
+              className="flex items-center text-white bg-blue-600 px-3 py-2 rounded-md hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
-              Login/Register
+              <FaSignInAlt className="mr-2" />
+              Log In / Register {/* Display 'Log In / Register' */}
             </button>
           )}
 
-          {/* Show the logout button if the user is logged in */}
           {userRole && (
             <button
               onClick={handleLogoutClick}
-              className="bg-red-500 text-white p-2 rounded"
+              className="flex items-center text-white bg-red-600 px-3 py-2 rounded-md hover:bg-red-700 active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-300"
             >
+              <FiLogOut className="mr-2" />
               Logout
             </button>
           )}
@@ -44,5 +43,4 @@ const Navbar = ({ userRole, handleLogout }) => {
   );
 };
 
-// Default export
 export default Navbar;

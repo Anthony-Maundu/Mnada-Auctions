@@ -1,26 +1,26 @@
 import React from 'react';
-import { auth, provider } from './firebase-config'; // Ensure this is the correct path
+import { auth, provider } from './firebase-config';
 import { signInWithPopup } from 'firebase/auth';
 
 const GoogleLogin = ({ setUserRole }) => {
   const handleGoogleLogin = async () => {
     try {
-      // Trigger the Google sign-in popup
+      // Trigger Google sign-in popup
       const result = await signInWithPopup(auth, provider);
 
-      // The signed-in user info
+      // Signed-in user information
       const user = result.user;
-      
-      // Assuming you're storing the user role (e.g., based on the email domain or other logic)
-      setUserRole('client'); // You can modify this based on your needs
 
-      // Save the user to local storage (or session, or your state management solution)
+      // Set user role (you can add your custom logic here)
+      setUserRole('client'); // Adjust based on your application's logic
+
+      // Save user details to local storage
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect to the homepage or a dashboard
-      window.location.href = "/"; // Or navigate to a specific page
+      // Redirect to a specific page
+      window.location.href = "/"; // Update with your desired route
     } catch (error) {
-      console.error("Error during Google login", error);
+      console.error("Error during Google login:", error);
       alert("Login failed, please try again!");
     }
   };

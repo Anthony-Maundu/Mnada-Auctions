@@ -16,22 +16,22 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-semibold">Admin Dashboard</h1>
+    <div className="container mx-auto p-6 bg-purple-100">
+      <h1 className="text-3xl font-semibold hover:shadow-inner">Admin Dashboard </h1>
       
       {/* System Overview Section */}
       <div className="mt-6">
         <h2 className="text-2xl font-medium">System Overview</h2>
         <div className="grid grid-cols-3 gap-6 mt-4">
-          <div className="bg-blue-100 p-4 rounded">
+          <div className="bg-blue-100 p-4 rounded-md hover:shadow-lg">
             <h3 className="font-semibold">Total Users</h3>
             <p>100</p>
           </div>
-          <div className="bg-blue-100 p-4 rounded">
+          <div className="bg-blue-100 p-4 rounded-md hover:shadow-lg">
             <h3 className="font-semibold">Active Auctions</h3>
             <p>5</p>
           </div>
-          <div className="bg-blue-100 p-4 rounded">
+          <div className="bg-blue-100 p-4 rounded-md hover:shadow-lg">
             <h3 className="font-semibold">Total Bids</h3>
             <p>350</p>
           </div>
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Auction Approval Section */}
-      <h2 className="text-2xl font-medium mt-6">Pending Auctions</h2>
+      <h2 className="text-2xl font-medium mt-6 hover:shadow-inner">Pending Auctions</h2>
       <div className="mt-4">
         {pendingItems.length === 0 ? (
           <p>No pending auctions.</p>
@@ -62,7 +62,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Approved Auctions Section */}
-      <h2 className="text-2xl font-medium mt-6">Approved Auctions</h2>
+      <h2 className="text-2xl font-medium mt-6 hover:shadow-inner">Approved Auctions</h2>
       <div className="mt-4">
         {approvedItems.length === 0 ? (
           <p>No approved auctions.</p>
