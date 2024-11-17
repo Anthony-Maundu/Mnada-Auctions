@@ -5,4 +5,3 @@ build/
 *.json
 SKIP_PREFLIGHT_CHECK=true
 NODE_OPTIONS=--openssl-legacy-provider
-
