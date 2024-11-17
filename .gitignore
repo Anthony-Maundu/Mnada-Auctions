@@ -1,0 +1,7 @@
+node_modules/
+build/
+*.pack
+.eslintcache
+*.json
+SKIP_PREFLIGHT_CHECK=true
+NODE_OPTIONS=--openssl-legacy-provider
