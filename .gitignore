@@ -6,3 +6,4 @@ build/
 SKIP_PREFLIGHT_CHECK=true
 NODE_OPTIONS=--openssl-legacy-provider
 .cache/.eslintcache
+.cache/.eslintcache
