@@ -43,7 +43,7 @@ const App = () => {
       <div className="min-h-screen bg-gray-100">
         {userRole && <Navbar userRole={userRole} handleLogout={handleLogout} />}
         
-        <main className="container mx-auto p-6">
+        <main className="mx-auto">
           <Routes>
             {/* Set HomePage as the default route */}
             <Route
